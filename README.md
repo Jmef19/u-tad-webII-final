@@ -33,10 +33,12 @@ I focused on maintaining a clean architecture and structured organization.
         - deleteUser.js
         - index.js
     - company/
+      - \_\_tests\_\_
       - entities/
         - company.js
         - index.js
       - useCases/
+        - \_\_tests\_\_
         - onboardingCompany.js
         - index.js
     - errors/
