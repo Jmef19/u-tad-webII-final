@@ -4,7 +4,8 @@
   "description": "This project is a backend application built using [Node.js](https://nodejs.org/en), [Express](https://expressjs.com/) and [MySql](https://www.mysql.com/), implementing a user management API. The API supports registration, authentication, email validation, profile updates and additional functionalities like password recovery.",
   "main": "index.js",
   "scripts": {
-    "start": "node --watch src/index.js"
+    "start": "node --watch src/index.js",
+    "test": "jest --coverage --runInBand"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +17,8 @@
     "express-fileupload": "^1.5.1",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }

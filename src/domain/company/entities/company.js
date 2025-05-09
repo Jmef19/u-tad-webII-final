@@ -1,7 +1,6 @@
 const { ValidationError } = require("../../errors");
 
 class Company {
-  #id;
   #name;
   #CIF;
   #address;
@@ -10,10 +9,6 @@ class Company {
     this.name = name;
     this.CIF = CIF;
     this.address = address;
-  }
-
-  get id() {
-    return this.#id;
   }
 
   get name() {
