@@ -17,6 +17,7 @@ I focused on maintaining a clean architecture and structured organization.
       - index.js
   - domain/
     - user/
+    - \_\_tests\_\_
       - entities/
         - user.js
         - index.js
@@ -90,7 +91,7 @@ I focused on maintaining a clean architecture and structured organization.
 ## Features
 
 - **User Registration (POST)**
-  ``http://localhost:4000/user/register``
+  `http://localhost:4000/user/register`
 
   - Validates user email.
   - Ensures password has at least 8 characters.
@@ -100,21 +101,21 @@ I focused on maintaining a clean architecture and structured organization.
   - Returns user data and a JWT upon successful registration.
 
 - **Email Validation (PUT)**
-  ``http://localhost:4000/user/validation``
+  `http://localhost:4000/user/validation`
 
   - Requires JWT.
   - Validates the six-digit code.
   - Updates the user's status.
 
 - **User Login (POST)**
-  ``http://localhost:4000/user/login``
+  `http://localhost:4000/user/login`
 
   - Validates credentials.
   - Returns user data and JWT upon success.
 
 - **Onboarding (PATCH)**
-  ``http://localhost:4000/user/onboarding`` for user data.
-  ``http://localhost:4000/company/onboarding`` for company data.
+  `http://localhost:4000/user/onboarding` for user data.
+  `http://localhost:4000/company/onboarding` for company data.
 
   - Updates personal and company data.
   - Requires JWT.
@@ -122,22 +123,22 @@ I focused on maintaining a clean architecture and structured organization.
   - _(Note: This method felt a bit unintuitive to implement.)_
 
 - **Profile Image Upload (PATCH)**
-  ``http://localhost:4000/user/logo``
+  `http://localhost:4000/user/logo`
 
   - Accepts profile images with size control.
   - Stores image URLs in the database (images stored locally).
 
 - **Additional Endpoints**
   - `GET` user by JWT token.
-    ``http://localhost:4000/user/me``
+    `http://localhost:4000/user/me`
   - `DELETE` user (hard or soft delete via `?soft=false` query).
-    ``http://localhost:4000/user/delete?soft=true`` is soft delete
-    ``http://localhost:4000/user/delete?soft=false`` is hard delete
+    `http://localhost:4000/user/delete?soft=true` is soft delete
+    `http://localhost:4000/user/delete?soft=false` is hard delete
   - Password recovery and reset flows.
-    `POST` ``http://localhost:4000/user/password/request`` to ask for a password reset. It will return a token used for resetting the password
-    `POST` ``http://localhost:4000/user/password/recover`` to reset the password
+    `POST` `http://localhost:4000/user/password/request` to ask for a password reset. It will return a token used for resetting the password
+    `POST` `http://localhost:4000/user/password/recover` to reset the password
   - `GET`Returns summarized data for the user.
-    ``http://localhost:4000/user/dashboard``
+    `http://localhost:4000/user/dashboard`
 
 ## Technology Stack
 

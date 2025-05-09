@@ -15,6 +15,8 @@ module.exports = {
     "^@persistence/(.*)$": "<rootDir>/src/infrastructure/persistence/$1",
     "^@web/(.*)$": "<rootDir>/src/infrastructure/web/$1",
     "^@express/(.*)$": "<rootDir>/src/infrastructure/web/express/$1",
+    "^@express/routes(.*)$":
+      "<rootDir>/src/infrastructure/web/express/routes/$1",
   },
   maxWorkers: 1,
 };

@@ -1,5 +1,6 @@
-const { ValidationError } = require("../../errors");
 const { Company } = require("../entities");
+
+const { ValidationError } = require("../../errors");
 
 describe("Company", () => {
   it("should create a company with valid data", () => {
