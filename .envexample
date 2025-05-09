@@ -1,0 +1,14 @@
+# Environment variables, you should modify this file to your needs
+PORT= TODO # e.g. 4000, 5000, 8080, etc.
+API_URL= TODO # e.g. localhost:4000/api,
+
+# Database
+MYSQL_URI= TODO # e.g. mysql://user:password@host:port/database
+
+# JWT
+JWT_SECRET= TODO # e.g. a long_random_string, a base64 encoded string, etc.
+
+JWT_EXPIRES_IN= TODO # e.g. 1h, 1d, 1w, 1y, etc.
+
+# Number of attempts to validate code
+NUMBER_OF_ATTEMPTS= TODO # e.g. 3, 5, 10, etc.
