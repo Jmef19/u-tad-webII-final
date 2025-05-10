@@ -5,6 +5,7 @@ const DatabaseQueryError = require("./DatabaseQueryError");
 const JWTError = require("./JWTError");
 const UserNotFoundError = require("./UserNotFoundError");
 const UserNotValidatedError = require("./UserNotValidatedError");
+const ClientNotFoundError = require("./ClientNotFoundError");
 
 module.exports = {
   AlreadyExistsError,
@@ -14,4 +15,5 @@ module.exports = {
   JWTError,
   UserNotFoundError,
   UserNotValidatedError,
+  ClientNotFoundError,
 };

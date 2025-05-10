@@ -17,7 +17,7 @@ I focused on maintaining a clean architecture and structured organization.
       - index.js
   - domain/
     - user/
-    - \_\_tests\_\_
+    - \_\_tests\_\_/
       - entities/
         - user.js
         - index.js
@@ -34,14 +34,20 @@ I focused on maintaining a clean architecture and structured organization.
         - deleteUser.js
         - index.js
     - company/
-      - \_\_tests\_\_
+      - \_\_tests\_\_/
       - entities/
         - company.js
         - index.js
       - useCases/
-        - \_\_tests\_\_
+        - \_\_tests\_\_/
         - onboardingCompany.js
         - index.js
+    - client/
+      - \_\_tests\_\_/
+      - entities/
+        - client.js
+        - index.js
+      - useCases/
     - errors/
       - AlreadyExistsError.js
       - DatabaseConnectionError.js
@@ -137,7 +143,7 @@ I focused on maintaining a clean architecture and structured organization.
   - Password recovery and reset flows.
     `POST` `http://localhost:4000/user/password/request` to ask for a password reset. It will return a token used for resetting the password
     `POST` `http://localhost:4000/user/password/recover` to reset the password
-  - `GET`Returns summarized data for the user.
+  - `GET` returns summarized data for the user.
     `http://localhost:4000/user/dashboard`
 
 ## Technology Stack
@@ -161,8 +167,8 @@ After working on the project during Easter holidays, I lost the entire codebase 
 
 ## Possible Improvements
 
-- Better organization of user use cases into separate subfolders.
+- Better organization of code in `domain/` folder.
 - Refactor and structure the `services/` folder more clearly.
 - Implement reusable middleware functions to handle common logic (e.g., auth, error handling).
-- Maintain consistent formatting across use cases, DAOs, and routes.
-- Implement tests to ensure the app runs correctly and remains stable.
+- Maintain consistent formatting across entities, use cases, DAOs, and routes.
+- Implement more and better tests to ensure the app runs correctly and remains stable.

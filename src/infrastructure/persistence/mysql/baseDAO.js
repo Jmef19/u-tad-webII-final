@@ -45,6 +45,17 @@ class BaseDAO {
           FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE SET NULL
         )
       `);
+
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS clients (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          name VARCHAR(255),
+          cif CHAR(9) UNIQUE,
+          address VARCHAR(255),
+          user_id INT,
+          deleted INT DEFAULT 0,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )`);
     } catch (error) {
       if (!connection || error?.code === "ECONNREFUSED") {
         throw new DatabaseConnectionError("Error connecting to database");

@@ -1,6 +1,6 @@
 const express = require("express");
 const configureMiddlewares = require("./middlewares");
-const { companyRouter, userRouter } = require("./routes");
+const { companyRouter, userRouter, clientRouter } = require("./routes");
 
 function startWeb() {
   const app = express();
@@ -11,6 +11,7 @@ function startWeb() {
   // Configure routes
   app.use("/company", companyRouter);
   app.use("/user", userRouter);
+  app.use("/client", clientRouter);
 
   // Start the server
   const server = startServer(app, process.env.PORT || 3000);

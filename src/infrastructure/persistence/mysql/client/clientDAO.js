@@ -1,0 +1,113 @@
+const BaseDAO = require("../baseDAO");
+
+const {
+  DatabaseConnectionError,
+  DatabaseQueryError,
+  UserNotFoundError,
+  ClientNotFoundError,
+} = require("../../../../domain/errors");
+
+class ClientDAO extends BaseDAO {
+  async createSchema() {
+    await this.createDatabaseSchemaIfNotExists();
+  }
+
+  handleError(error, connection, customMessage = "Database operation failed") {
+    if (
+      error instanceof UserNotFoundError ||
+      error instanceof ClientNotFoundError
+    ) {
+      throw error;
+    }
+    if (!connection || error?.code === "ECONNREFUSED") {
+      throw new DatabaseConnectionError("Error connecting to the database");
+    }
+    throw new DatabaseQueryError(`${customMessage}: ${error.message || ""}`);
+  }
+
+  async getConnectionWithSchema() {
+    await this.createSchema();
+    return this.pool.getConnection();
+  }
+
+  async create(client) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [result] = await connection.query(
+        "INSERT INTO clients (name, cif, address, user_id) VALUES (?, ?, ?, ?)",
+        [client.name, client.CIF, client.address, client.userId]
+      );
+      client.id = result.insertId;
+      return client;
+    } catch (error) {
+      this.handleError(error, connection);
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
+  async getAll(userId) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [rows] = await connection.query(
+        "SELECT * FROM clients WHERE user_id = ?",
+        [userId]
+      );
+      return rows;
+    } catch (error) {
+      this.handleError(error, connection);
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
+  async update(client) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [result] = await connection.query(
+        "UPDATE clients SET name = ?, address = ? WHERE cif = ?",
+        [client.name, client.address, client.CIF]
+      );
+      if (result.affectedRows === 0) {
+        throw new ClientNotFoundError("Client not found");
+      }
+      return client;
+    } catch (error) {
+      this.handleError(error, connection);
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
+  async getById(id) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [rows] = await connection.query(
+        "SELECT * FROM clients WHERE id = ?",
+        [id]
+      );
+      if (rows.length === 0) {
+        throw new ClientNotFoundError("Client not found");
+      }
+      return rows[0];
+    } catch (error) {
+      this.handleError(error, connection);
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+}
+
+module.exports = new ClientDAO();
