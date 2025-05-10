@@ -1,4 +1,6 @@
-# Web II Partial Assignment
+# Web II Final Assignment
+
+Work in progress — due to limited time, the implementation isn't as refined as intended.
 
 ### By Juan Manuel Escudero
 
