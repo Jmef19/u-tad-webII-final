@@ -3,6 +3,7 @@ const GetClients = require("./getClients");
 const UpdateClient = require("./updateClient");
 const GetClientById = require("./getClientById");
 const DeleteClient = require("./deleteClient");
+const RestoreClient = require("./restoreClient");
 
 module.exports = {
   CreateClient,
@@ -10,4 +11,5 @@ module.exports = {
   UpdateClient,
   GetClientById,
   DeleteClient,
+  RestoreClient,
 };

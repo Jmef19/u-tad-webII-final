@@ -169,6 +169,47 @@ class ClientDAO extends BaseDAO {
       }
     }
   }
+
+  async getDeletedClientById(id) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [rows] = await connection.query(
+        "SELECT * FROM clients WHERE id = ? AND deleted = 1",
+        [id]
+      );
+      if (rows.length === 0) {
+        throw new ClientNotFoundError("Client not found");
+      }
+      return rows[0];
+    } catch (error) {
+      this.handleError(error, connection);
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
+  async restore(client) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [result] = await connection.query(
+        "UPDATE clients SET deleted = 0 WHERE id = ?",
+        [client.id]
+      );
+      if (result.affectedRows === 0) {
+        throw new ClientNotFoundError("Client not found");
+      }
+    } catch (error) {
+      this.handleError(error, connection);
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
 }
 
 module.exports = new ClientDAO();

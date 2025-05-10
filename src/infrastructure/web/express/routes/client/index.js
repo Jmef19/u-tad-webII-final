@@ -5,6 +5,7 @@ const ClientDAO = require("../../../../persistence/mysql/client/clientDAO");
 const {
   JWTError,
   DeliveryNoteExistingError,
+  ValidationError,
 } = require("../../../../../domain/errors");
 
 const {
@@ -13,6 +14,7 @@ const {
   GetClientById,
   UpdateClient,
   DeleteClient,
+  RestoreClient,
 } = require("../../../../../domain/client/useCases");
 
 const router = Router();
@@ -21,7 +23,7 @@ function handleError(error, res) {
   if (error instanceof JWTError) {
     res.status(401).json({ error: error.message });
   } else if (error instanceof ValidationError) {
-    res.status(400).json({ error: error.message });
+    res.status(422).json({ error: error.message });
   } else if (error instanceof ClientNotFoundError) {
     res.status(404).json({ error: error.message });
   } else if (
@@ -143,8 +145,32 @@ router.delete("/:id", async (req, res) => {
     assertEmptyBody(req);
     const token = getTokenFromHeader(req);
     const { id } = req.params;
+    const { soft } = req.query;
+    if (soft === undefined) {
+      throw new ValidationError("Query parameter 'soft' is required.");
+    }
+    if (soft !== "true" && soft !== "false") {
+      throw new ValidationError(
+        "Query parameter 'soft' must be 'true' or 'false'."
+      );
+    }
     const deleteClient = new DeleteClient(ClientDAO);
-    await deleteClient.execute(id, token);
+    await deleteClient.execute(id, token, soft === "true");
+    res.status(204).send();
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+// @route PUT /restore/:id
+// @desc Restore a soft-deleted client by ID
+router.put("/restore/:id", async (req, res) => {
+  try {
+    assertEmptyBody(req);
+    const token = getTokenFromHeader(req);
+    const { id } = req.params;
+    const restoreClient = new RestoreClient(ClientDAO);
+    await restoreClient.execute(id, token);
     res.status(204).send();
   } catch (error) {
     handleError(error, res);

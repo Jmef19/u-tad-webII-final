@@ -6,7 +6,7 @@
 
 This project is a backend application built using [Node.js](https://nodejs.org/en), [Express](https://expressjs.com/) and [MySql](https://www.mysql.com/), implementing a user management API. The API supports registration, authentication, email validation, profile updates and additional functionalities like password recovery.
 
-## Project organization
+## Project organization (NOT UPDATED)
 
 I focused on maintaining a clean architecture and structured organization.
 
