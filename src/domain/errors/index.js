@@ -6,6 +6,8 @@ const JWTError = require("./JWTError");
 const UserNotFoundError = require("./UserNotFoundError");
 const UserNotValidatedError = require("./UserNotValidatedError");
 const ClientNotFoundError = require("./ClientNotFoundError");
+const DeliveryNoteExistingError = require("./DeliveryNoteExistingError");
+const NotOwnedClientError = require("./NotOwnedClientError");
 
 module.exports = {
   AlreadyExistsError,
@@ -16,4 +18,6 @@ module.exports = {
   UserNotFoundError,
   UserNotValidatedError,
   ClientNotFoundError,
+  DeliveryNoteExistingError,
+  NotOwnedClientError,
 };

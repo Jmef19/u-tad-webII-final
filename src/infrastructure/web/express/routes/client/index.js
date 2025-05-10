@@ -2,16 +2,41 @@ const { Router } = require("express");
 
 const ClientDAO = require("../../../../persistence/mysql/client/clientDAO");
 
-const { JWTError } = require("../../../../../domain/errors");
+const {
+  JWTError,
+  DeliveryNoteExistingError,
+} = require("../../../../../domain/errors");
 
 const {
   CreateClient,
   GetClients,
   GetClientById,
   UpdateClient,
+  DeleteClient,
 } = require("../../../../../domain/client/useCases");
 
 const router = Router();
+
+function handleError(error, res) {
+  if (error instanceof JWTError) {
+    res.status(401).json({ error: error.message });
+  } else if (error instanceof ValidationError) {
+    res.status(400).json({ error: error.message });
+  } else if (error instanceof ClientNotFoundError) {
+    res.status(404).json({ error: error.message });
+  } else if (
+    error instanceof NotOwnedClientError ||
+    error instanceof DeliveryNoteExistingError
+  ) {
+    res.status(403).json({ error: error.message });
+  } else if (error instanceof DatabaseConnectionError) {
+    res.status(500).json({ error: "Database connection error" });
+  } else if (error instanceof DatabaseQueryError) {
+    res.status(500).json({ error: "Database query error" });
+  } else {
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 
 function getTokenFromHeader(req) {
   const authHeader = req.headers.authorization;
@@ -32,7 +57,7 @@ function assertEmptyBody(req) {
   }
 }
 
-// @route POST /api/client
+// @route POST /
 // @desc Create a new client
 router.post("/", async (req, res) => {
   try {
@@ -56,7 +81,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// @route GET /api/client
+// @route GET /
 // @desc Get all clients
 router.get("/", async (req, res) => {
   try {
@@ -70,7 +95,33 @@ router.get("/", async (req, res) => {
   }
 });
 
-// @route GET /api/client/:id
+// @route PUT /:id
+// @desc Update a client by ID
+router.put("/:id", async (req, res) => {
+  try {
+    const token = getTokenFromHeader(req);
+    const { id } = req.params;
+    const { name, CIF, address, ...rest } = req.body;
+    if (Object.keys(rest).length > 0) {
+      throw new ValidationError("Request body contains unexpected fields.");
+    }
+    const updateClient = new UpdateClient(ClientDAO);
+    const result = await updateClient.execute(
+      {
+        name,
+        CIF,
+        address,
+      },
+      id,
+      token
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+// @route GET /:id
 // @desc Get a client by ID
 router.get("/:id", async (req, res) => {
   try {
@@ -78,8 +129,23 @@ router.get("/:id", async (req, res) => {
     const token = getTokenFromHeader(req);
     const { id } = req.params;
     const getClientById = new GetClientById(ClientDAO);
-    const result = await getClientById.execute(id);
+    const result = await getClientById.execute(id, token);
     res.status(200).json(result);
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+// @route DELETE /:id
+// @desc Delete a client by ID based on parameters(soft/hard)
+router.delete("/:id", async (req, res) => {
+  try {
+    assertEmptyBody(req);
+    const token = getTokenFromHeader(req);
+    const { id } = req.params;
+    const deleteClient = new DeleteClient(ClientDAO);
+    await deleteClient.execute(id, token);
+    res.status(204).send();
   } catch (error) {
     handleError(error, res);
   }

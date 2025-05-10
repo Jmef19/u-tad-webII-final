@@ -1,4 +1,4 @@
-const { Client } = require("../entities");
+const { DeliveryNoteExistingError } = require("../../../domain/errors");
 
 const { JWTService } = require("../../../infrastructure/services");
 
@@ -7,12 +7,13 @@ const {
   NotOwnedClientError,
 } = require("../../../domain/errors");
 
-class UpdateClient {
+class DeleteClient {
   constructor(clientDAO) {
     this.clientDAO = clientDAO;
   }
 
-  async execute({ name, CIF, address }, id, token) {
+  // DELETE client based on parameters(soft/hard)
+  async execute(id, token, soft = true) {
     const decoded = JWTService.verify(token);
     const userId = decoded.userId;
     const valid = await this.clientDAO.isOwnedByUser(id, userId);
@@ -23,9 +24,18 @@ class UpdateClient {
       }
       throw new NotOwnedClientError("Client not owned by user");
     }
-    const client = new Client({ name, CIF, address });
-    const updatedClient = await this.clientDAO.update(client);
-    return updatedClient;
+    const deliveryNote = await this.clientDAO.getDeliveryNoteByClientId(id);
+    if (deliveryNote) {
+      throw new DeliveryNoteExistingError(
+        "Cannot delete client with existing delivery notes."
+      );
+    }
+    if (soft) {
+      await this.clientDAO.softDelete(id);
+    } else {
+      await this.clientDAO.hardDelete(id);
+    }
   }
 }
-module.exports = UpdateClient;
+
+module.exports = DeleteClient;

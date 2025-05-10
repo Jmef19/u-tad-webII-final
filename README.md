@@ -94,7 +94,7 @@ I focused on maintaining a clean architecture and structured organization.
 - package.json
 - README.md
 
-## Features
+## Features (NOT UPDATED)
 
 - **User Registration (POST)**
   `http://localhost:4000/user/register`
@@ -172,3 +172,4 @@ After working on the project during Easter holidays, I lost the entire codebase 
 - Implement reusable middleware functions to handle common logic (e.g., auth, error handling).
 - Maintain consistent formatting across entities, use cases, DAOs, and routes.
 - Implement more and better tests to ensure the app runs correctly and remains stable.
+- Will need refactoring for sure

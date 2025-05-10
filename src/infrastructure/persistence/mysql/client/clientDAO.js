@@ -30,6 +30,27 @@ class ClientDAO extends BaseDAO {
     return this.pool.getConnection();
   }
 
+  async checkIfUserOwnsClient(userId, clientId) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [rows] = await connection.query(
+        "SELECT * FROM clients WHERE id = ? AND user_id = ?",
+        [clientId, userId]
+      );
+      if (rows.length === 0) {
+        throw new UserNotFoundError("User does not own this client");
+      }
+      return rows[0];
+    } catch (error) {
+      this.handleError(error, connection);
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
   async create(client) {
     let connection;
     try {
@@ -100,6 +121,46 @@ class ClientDAO extends BaseDAO {
         throw new ClientNotFoundError("Client not found");
       }
       return rows[0];
+    } catch (error) {
+      this.handleError(error, connection);
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
+  async softDelete(id) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [result] = await connection.query(
+        "UPDATE clients SET deleted = 1 WHERE id = ?",
+        [id]
+      );
+      if (result.affectedRows === 0) {
+        throw new ClientNotFoundError("Client not found");
+      }
+    } catch (error) {
+      this.handleError(error, connection);
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
+  async hardDelete(id) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [result] = await connection.query(
+        "UPDATE clients SET deleted = 2, name = NULL, cif = NULL, address = NULL  WHERE id = ?",
+        [id]
+      );
+      if (result.affectedRows === 0) {
+        throw new ClientNotFoundError("Client not found");
+      }
     } catch (error) {
       this.handleError(error, connection);
     } finally {
