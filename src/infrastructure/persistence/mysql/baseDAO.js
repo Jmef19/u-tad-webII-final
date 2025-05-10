@@ -54,8 +54,22 @@ class BaseDAO {
           address VARCHAR(255),
           user_id INT,
           deleted INT DEFAULT 0,
-          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
         )`);
+
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS projects (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          name VARCHAR(255),
+          email VARCHAR(255),
+          address VARCHAR(255),
+          deleted INT DEFAULT 0,
+          user_id INT,
+          client_id INT,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+          FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL
+        )
+      `);
     } catch (error) {
       if (!connection || error?.code === "ECONNREFUSED") {
         throw new DatabaseConnectionError("Error connecting to database");

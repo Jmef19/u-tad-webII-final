@@ -8,6 +8,8 @@ const UserNotValidatedError = require("./UserNotValidatedError");
 const ClientNotFoundError = require("./ClientNotFoundError");
 const DeliveryNoteExistingError = require("./DeliveryNoteExistingError");
 const NotOwnedClientError = require("./NotOwnedClientError");
+const ProjectNotFoundError = require("./ProjectNotFoundError");
+const NotOwnedProjectError = require("./NotOwnedProjectError");
 
 module.exports = {
   AlreadyExistsError,
@@ -20,4 +22,6 @@ module.exports = {
   ClientNotFoundError,
   DeliveryNoteExistingError,
   NotOwnedClientError,
+  ProjectNotFoundError,
+  NotOwnedProjectError,
 };

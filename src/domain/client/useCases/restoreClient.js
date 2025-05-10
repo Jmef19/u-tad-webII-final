@@ -1,5 +1,3 @@
-const { Client } = require("../entities");
-
 const { JWTService } = require("../../../infrastructure/services");
 
 const {
