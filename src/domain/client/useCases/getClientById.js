@@ -7,8 +7,8 @@ class GetClientById {
 
   async execute(id, token) {
     const decoded = JWTService.verify(token);
-    const userId = decoded.userId;
-    await this.clientDAO.isOwnedByUser(id, userId);
+    const userId = decoded.id;
+    await this.clientDAO.checkIfUserOwnsClient(id, userId);
     return await this.clientDAO.getById(id);
   }
 }

@@ -2,11 +2,6 @@ const { Client } = require("../entities");
 
 const { JWTService } = require("../../../infrastructure/services");
 
-const {
-  ClientNotFoundError,
-  NotOwnedClientError,
-} = require("../../../domain/errors");
-
 class UpdateClient {
   constructor(clientDAO) {
     this.clientDAO = clientDAO;
@@ -21,7 +16,6 @@ class UpdateClient {
     await this.clientDAO.getByCIF(client.CIF);
 
     const updatedClient = await this.clientDAO.update(client);
-    console.log("Updated client:", updatedClient);
     return updatedClient;
   }
 }

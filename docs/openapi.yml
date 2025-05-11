@@ -648,4 +648,51 @@ paths:
         "500":
           description: Something failed out from your control (Database connection error, database query error or internal server error)
 
-  
+  /client/get/{id}:
+    get:
+      tags:
+        - Client
+      summary: Get a client by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the client to retrieve
+      responses:
+        "200":
+          description: Returns the client object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: "myClient"
+                  CIF:
+                    type: string
+                    example: "A12345678"
+                  address:
+                    type: string
+                    example: "myAddress"
+                  user_id:
+                    type: integer
+                    example: 1
+                  deleted:
+                    type: integer
+                    example: 0
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "404":
+          description: Client not found in database (ClientNotFound error)
+        "422":
+          description: Something was wrong in the body provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
