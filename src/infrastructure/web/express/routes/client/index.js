@@ -69,7 +69,7 @@ function assertEmptyBody(req) {
 
 // @route POST /
 // @desc Create a new client
-router.post("/", async (req, res) => {
+router.post("/create", async (req, res) => {
   try {
     const token = getTokenFromHeader(req);
     const { name, CIF, address, ...rest } = req.body;
@@ -93,7 +93,7 @@ router.post("/", async (req, res) => {
 
 // @route GET /
 // @desc Get all clients
-router.get("/", async (req, res) => {
+router.get("/getAll", async (req, res) => {
   try {
     assertEmptyBody(req);
     const token = getTokenFromHeader(req);
