@@ -11,6 +11,7 @@ const {
   DatabaseConnectionError,
   DatabaseQueryError,
   AlreadyExistsError,
+  UserNotFoundError,
 } = require("../../../../../domain/errors");
 
 const {
@@ -29,7 +30,10 @@ function handleError(error, res) {
     res.status(401).json({ error: error.message });
   } else if (error instanceof ValidationError) {
     res.status(422).json({ error: error.message });
-  } else if (error instanceof ClientNotFoundError) {
+  } else if (
+    error instanceof ClientNotFoundError ||
+    error instanceof UserNotFoundError
+  ) {
     res.status(404).json({ error: error.message });
   } else if (
     error instanceof NotOwnedClientError ||
@@ -107,7 +111,7 @@ router.get("/getAll", async (req, res) => {
 
 // @route PUT /:id
 // @desc Update a client by ID
-router.put("/:id", async (req, res) => {
+router.put("/update/:id", async (req, res) => {
   try {
     const token = getTokenFromHeader(req);
     const { id } = req.params;

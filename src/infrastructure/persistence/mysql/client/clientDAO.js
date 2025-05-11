@@ -32,7 +32,7 @@ class ClientDAO extends BaseDAO {
     return this.pool.getConnection();
   }
 
-  async checkIfUserOwnsClient(userId, clientId) {
+  async checkIfUserOwnsClient(clientId, userId) {
     let connection;
     try {
       connection = await this.getConnectionWithSchema();
@@ -62,7 +62,9 @@ class ClientDAO extends BaseDAO {
         [CIF, userId]
       );
       if (rows.length > 0) {
-        throw new AlreadyExistsError("Client already exists for this user");
+        throw new AlreadyExistsError(
+          "This client already exists for this user"
+        );
       }
     } catch (error) {
       this.handleError(error, connection);
@@ -118,13 +120,13 @@ class ClientDAO extends BaseDAO {
     try {
       connection = await this.getConnectionWithSchema();
       const [result] = await connection.query(
-        "UPDATE clients SET name = ?, address = ? WHERE cif = ?",
+        "UPDATE clients SET name = ?, address = ? WHERE cif = ? AND deleted = 0",
         [client.name, client.address, client.CIF]
       );
       if (result.affectedRows === 0) {
-        throw new ClientNotFoundError("Client not found");
+        throw new ClientNotFoundError("Client not found by CIF");
       }
-      return client;
+      return await this.getByCIF(client.CIF);
     } catch (error) {
       this.handleError(error, connection);
     } finally {
@@ -143,7 +145,28 @@ class ClientDAO extends BaseDAO {
         [id]
       );
       if (rows.length === 0) {
-        throw new ClientNotFoundError("Client not found");
+        throw new ClientNotFoundError("Client not found by ID");
+      }
+      return rows[0];
+    } catch (error) {
+      this.handleError(error, connection);
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
+  async getByCIF(cif) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [rows] = await connection.query(
+        "SELECT * FROM clients WHERE cif = ?",
+        [cif]
+      );
+      if (rows.length === 0) {
+        throw new ClientNotFoundError("Client not found by CIF");
       }
       return rows[0];
     } catch (error) {
