@@ -1,0 +1,453 @@
+openapi: 3.0.0
+info:
+  title: Final Web II Project (U-Tad)
+  version: 1.0.0
+  description: This is my custom API documentation. Done By Juan Manuel Escudero
+servers:
+  - url: http://localhost:4000
+    description: Local server
+
+tags:
+  - name: User
+    description: All endpoints related to user
+  - name: Company
+    description: All endpoints related to company
+  - name: Client
+    description: All endpoints related to client
+  - name: Project
+    description: All endpoints related to project
+  - name: DeliveryNotes
+    description: All endpoints related to delivery notes
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+paths:
+  /user/register:
+    post:
+      tags:
+        - User
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: juanma@gmail.com
+                password:
+                  type: string
+                  example: 12345678
+      responses:
+        "200":
+          description: Returns the created object and a JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                  email:
+                    type: string
+                    example: juanma@gmail.com
+                  status:
+                    type: string
+                    example: "not_validated"
+                  role:
+                    type: string
+                    example: "personal"
+        "422":
+          description: Something was wrong in the body provided (Validation error)
+        "409":
+          description: User already exists in database and is authenticated (UserAlreadyExists error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /user/validation:
+    put:
+      tags:
+        - User
+      summary: Validate a user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  example: 123456
+      responses:
+        "200":
+          description: Validates the user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  acknowledge:
+                    type: boolean
+                    example: true
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "422":
+          description: Something was wrong in the body provided or code was invalid (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /user/login:
+    post:
+      tags:
+        - User
+      summary: Login a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "juanma@gmail.com"
+                password:
+                  type: string
+                  example: "12345678"
+      responses:
+        "200":
+          description: Returns the created object and a JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                  email:
+                    type: string
+                    example: juanma@gmail.com
+                  status:
+                    type: string
+                    example: "not_validated"
+                  role:
+                    type: string
+                    example: "personal"
+        "401":
+          description: User not validated (UserNotValidated error)
+        "404":
+          description: User not found in database (UserNotFound error)
+        "422":
+          description: Something was wrong in the body provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /user/onboarding:
+    patch:
+      tags:
+        - User
+      summary: Onboard a user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Juanma"
+                surname:
+                  type: string
+                  example: "Escudero"
+                NIF:
+                  type: string
+                  example: "12345678A"
+      responses:
+        "200":
+          description: Add data to the user and make it a 'personal' user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  acknowledge:
+                    type: boolean
+                    example: true
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "422":
+          description: Something was wrong in the body provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /user/logo:
+    patch:
+      tags:
+        - User
+      summary: Upload a profile picture for a user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Uploads a profile picture for a user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  acknowledge:
+                    type: boolean
+                    example: true
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "422":
+          description: Something was wrong in the body provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /user/me:
+    get:
+      tags:
+        - User
+      summary: Get the current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Returns the current user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  email:
+                    type: string
+                    example: "juanma@gmail.com"
+                  password:
+                    type: string
+                    example: "12345678"
+                  validationCode:
+                    type: string
+                    example: "123456"
+                  number_of_attemps:
+                    type: integer
+                    example: 0
+                  status:
+                    type: string
+                    example: "validated"
+                  deleted:
+                    type: integer
+                    example: 0
+                  role:
+                    type: string
+                    example: "personal"
+                  profile_url:
+                    type: string
+                    example: "https://example.com/profile.png"
+                  profile_mem_type:
+                    type: string
+                    example: "image/png"
+                  profile_img_size:
+                    type: integer
+                    example: 12345
+                  name:
+                    type: string
+                    example: "Juanma"
+                  surname:
+                    type: string
+                    example: "Escudero"
+                  nif:
+                    type: string
+                    example: "12345678A"
+                  company_id:
+                    type: integer
+                    example: 1
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /user/delete:
+    delete:
+      tags:
+        - User
+      summary: Soft delete a user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: soft
+          in: query
+          required: true
+          schema:
+            type: boolean
+          description: Perform a soft delete if true; otherwise, perform a hard delete.
+      responses:
+        "200":
+          description: Soft delete a user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  acknowledge:
+                    type: boolean
+                    example: true
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "404":
+          description: User not found in database (UserNotFound error)
+        "422":
+          description: Something was wrong in the body or params provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /user/password/request:
+    post:
+      tags:
+        - User
+      summary: Request a password reset
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "juanma@gmail.com"
+      responses:
+        "200":
+          description: Sends a password reset token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resetToken:
+                    type: string
+                    example: "1234567890abcdef"
+                  reset:
+                    type: boolean
+                    example: true
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "404":
+          description: User not found in database (UserNotFound error)
+        "422":
+          description: Something was wrong in the body provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /user/password/reset:
+    post:
+      tags:
+        - User
+      summary: Reset the password
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: "12345678"
+      responses:
+        "200":
+          description: Password is resetted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  acknowledge:
+                    type: boolean
+                    example: true
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "404":
+          description: User not found in database (UserNotFound error)
+        "422":
+          description: Something was wrong in the body provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /company/onboarding:
+    patch:
+      tags:
+        - Company
+      summary: Create a new company associated to a user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "myCompany"
+                address:
+                  type: string
+                  example: "myAddress"
+                CIF:
+                  type: string
+                  example: "A12345678"
+      responses:
+        "200":
+          description: Data from company is added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  acknowledge:
+                    type: boolean
+                    example: true
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "404":
+          description: User not found in database (UserNotFound error)
+        "422":
+          description: Something was wrong in the body provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)

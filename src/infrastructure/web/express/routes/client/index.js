@@ -176,3 +176,5 @@ router.put("/restore/:id", async (req, res) => {
     handleError(error, res);
   }
 });
+
+module.exports = router;

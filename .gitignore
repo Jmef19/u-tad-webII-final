@@ -3,3 +3,6 @@
 /.env
 
 /coverage
+
+/resources
+src/resources/uploads/profile_pictures/

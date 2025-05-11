@@ -175,3 +175,4 @@ After working on the project during Easter holidays, I lost the entire codebase 
 - Maintain consistent formatting across entities, use cases, DAOs, and routes.
 - Implement more and better tests to ensure the app runs correctly and remains stable.
 - Will need refactoring for sure
+- Check the Swagger documentation to ensure it is correct
