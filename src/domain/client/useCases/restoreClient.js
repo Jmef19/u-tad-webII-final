@@ -16,7 +16,7 @@ class RestoreClient {
     await this.clientDAO.checkIfUserOwnsClient(id, userId);
     const client = await this.clientDAO.getDeletedClientById(id);
     await this.clientDAO.restore(client);
-    return { message: "ACK" };
+    return { acknowledged: true };
   }
 }
 module.exports = RestoreClient;
