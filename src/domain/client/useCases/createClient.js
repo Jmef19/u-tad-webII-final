@@ -9,7 +9,7 @@ class CreateClient {
 
   async execute({ name, CIF, address }, token) {
     const decoded = JWTService.verify(token);
-    const client = new Client({ name, CIF, address });
+    const client = new Client(name, CIF, address);
     client.userId = decoded.id;
     const createdClient = await this.clientDAO.create(client);
     return createdClient;

@@ -5,6 +5,7 @@ const {
   DatabaseQueryError,
   UserNotFoundError,
   ClientNotFoundError,
+  AlreadyExistsError,
 } = require("../../../../domain/errors");
 
 class ClientDAO extends BaseDAO {
@@ -15,7 +16,8 @@ class ClientDAO extends BaseDAO {
   handleError(error, connection, customMessage = "Database operation failed") {
     if (
       error instanceof UserNotFoundError ||
-      error instanceof ClientNotFoundError
+      error instanceof ClientNotFoundError ||
+      error instanceof AlreadyExistsError
     ) {
       throw error;
     }
@@ -51,16 +53,39 @@ class ClientDAO extends BaseDAO {
     }
   }
 
+  async checkIfClientExists(CIF, userId) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [rows] = await connection.query(
+        "SELECT * FROM clients WHERE cif = ? AND user_id = ?",
+        [CIF, userId]
+      );
+      if (rows.length > 0) {
+        throw new AlreadyExistsError("Client already exists for this user");
+      }
+    } catch (error) {
+      this.handleError(error, connection);
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
   async create(client) {
     let connection;
     try {
       connection = await this.getConnectionWithSchema();
+      await this.checkIfClientExists(client.CIF, client.userId);
       const [result] = await connection.query(
         "INSERT INTO clients (name, cif, address, user_id) VALUES (?, ?, ?, ?)",
         [client.name, client.CIF, client.address, client.userId]
       );
-      client.id = result.insertId;
-      return client;
+      if (result.affectedRows === 0) {
+        throw new DatabaseQueryError("Failed to create client");
+      }
+      return await this.getById(result.insertId);
     } catch (error) {
       this.handleError(error, connection);
     } finally {

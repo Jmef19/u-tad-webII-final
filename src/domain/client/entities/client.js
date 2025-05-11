@@ -7,10 +7,10 @@ class Client {
   #address;
   #userId;
 
-  constructor({ name, CIF, address }) {
-    this.#name = name;
-    this.#CIF = CIF;
-    this.#address = address;
+  constructor(name, CIF, address) {
+    this.name = name;
+    this.CIF = CIF;
+    this.address = address;
   }
 
   get id() {
@@ -35,7 +35,7 @@ class Client {
 
   set name(name) {
     if (!name || typeof name !== "string" || name.trim() === "") {
-      throw new ValidationError("Company name must be a non-empty string");
+      throw new ValidationError("Client name must be a non-empty string");
     }
     this.#name = name;
   }
@@ -50,9 +50,16 @@ class Client {
 
   set address(address) {
     if (!address || typeof address !== "string" || address.trim() === "") {
-      throw new ValidationError("Company address must be a non-empty string");
+      throw new ValidationError("Client address must be a non-empty string");
     }
     this.#address = address;
+  }
+
+  set userId(userId) {
+    if (!userId || typeof userId !== "number" || userId <= 0) {
+      throw new ValidationError("User ID must be a positive integer");
+    }
+    this.#userId = userId;
   }
 }
 

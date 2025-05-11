@@ -6,6 +6,11 @@ const {
   JWTError,
   DeliveryNoteExistingError,
   ValidationError,
+  ClientNotFoundError,
+  NotOwnedClientError,
+  DatabaseConnectionError,
+  DatabaseQueryError,
+  AlreadyExistsError,
 } = require("../../../../../domain/errors");
 
 const {
@@ -31,11 +36,14 @@ function handleError(error, res) {
     error instanceof DeliveryNoteExistingError
   ) {
     res.status(403).json({ error: error.message });
+  } else if (error instanceof AlreadyExistsError) {
+    res.status(409).json({ error: error.message });
   } else if (error instanceof DatabaseConnectionError) {
     res.status(500).json({ error: "Database connection error" });
   } else if (error instanceof DatabaseQueryError) {
     res.status(500).json({ error: "Database query error" });
   } else {
+    console.error("Unexpected error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -77,7 +85,7 @@ router.post("/", async (req, res) => {
       },
       token
     );
-    res.status(201).json(result);
+    res.status(200).json(result);
   } catch (error) {
     handleError(error, res);
   }
