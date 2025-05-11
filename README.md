@@ -98,7 +98,7 @@ I focused on maintaining a clean architecture and structured organization.
 
 ## Features
 
-View the [Swagger Documentation](https://jmef19.github.io/u-tad-webII-final/)
+View the Swagger documentation by pasting the contents of `docs/openapi.yml` into [Swagger Editor](https://editor.swagger.io/)
 
 ## Technology Stack
 
