@@ -6,6 +6,7 @@ const {
   UserNotFoundError,
   ClientNotFoundError,
   AlreadyExistsError,
+  ValidationError,
 } = require("../../../../domain/errors");
 
 class ClientDAO extends BaseDAO {
@@ -227,7 +228,9 @@ class ClientDAO extends BaseDAO {
         [id]
       );
       if (rows.length === 0) {
-        throw new ClientNotFoundError("Client not found");
+        throw new ClientNotFoundError(
+          "Client not found, hard deleted, not deleted or not existing"
+        );
       }
       return rows[0];
     } catch (error) {
@@ -249,6 +252,26 @@ class ClientDAO extends BaseDAO {
       );
       if (result.affectedRows === 0) {
         throw new ClientNotFoundError("Client not found");
+      }
+    } catch (error) {
+      this.handleError(error, connection);
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
+  async getDeliveryNoteByClientId(clientId) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [rows] = await connection.query(
+        "SELECT * FROM delivery_notes WHERE client_id = ?",
+        [clientId]
+      );
+      if (rows.length > 0) {
+        throw new ValidationError("Client has delivery notes");
       }
     } catch (error) {
       this.handleError(error, connection);

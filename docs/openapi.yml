@@ -696,3 +696,77 @@ paths:
           description: Something was wrong in the body provided (Validation error)
         "500":
           description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /client/delete/{id}:
+    delete:
+      tags:
+        - Client
+      summary: Delete a client (soft or hard)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the client to delete
+        - name: soft
+          in: query
+          required: true
+          schema:
+            type: boolean
+          description: Perform a soft delete if true; otherwise, perform a hard delete.
+      responses:
+        "200":
+          description: Soft delete a client
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  acknowledge:
+                    type: boolean
+                    example: true
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "404":
+          description: Client not found in database (ClientNotFound error)
+        "422":
+          description: Something was wrong in the body or params provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+  
+  /client/restore/{id}:
+    patch:
+      tags:
+        - Client
+      summary: Restore a soft-deleted client
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the client to restore
+      responses:
+        "200":
+          description: Restores a soft-deleted client
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  acknowledge:
+                    type: boolean
+                    example: true
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "404":
+          description: Client not found in database (ClientNotFound error)
+        "422":
+          description: Something was wrong in the body provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)

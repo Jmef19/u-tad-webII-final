@@ -152,7 +152,7 @@ router.get("/:id", async (req, res) => {
 
 // @route DELETE /:id
 // @desc Delete a client by ID based on parameters(soft/hard)
-router.delete("/:id", async (req, res) => {
+router.delete("/delete/:id", async (req, res) => {
   try {
     assertEmptyBody(req);
     const token = getTokenFromHeader(req);
