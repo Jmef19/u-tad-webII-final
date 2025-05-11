@@ -96,7 +96,9 @@ I focused on maintaining a clean architecture and structured organization.
 - package.json
 - README.md
 
-## Features (look at swagger documentation in docs/openapi.yml)
+## Features
+
+View the [Swagger Documentation](https://jmef19.github.io/u-tad-webII-final/)
 
 ## Technology Stack
 
