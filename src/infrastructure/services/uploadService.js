@@ -7,9 +7,16 @@ const UPLOAD_DIR = path.join(
   "../../resources/uploads/profile_pictures"
 );
 
+const PDF_DIR = path.join(__dirname, "../../resources/uploads/pdf_files");
+
 // Ensure the upload folder exists
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
+
+// Ensure the PDF folder exists
+if (!fs.existsSync(PDF_DIR)) {
+  fs.mkdirSync(PDF_DIR, { recursive: true });
 }
 
 const uploadService = {
@@ -44,6 +51,20 @@ const uploadService = {
       };
     } catch (err) {
       throw new ValidationError("Failed to save uploaded file.");
+    }
+  },
+
+  async uploadPDF(buffer) {
+    const fileName = `${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(2)}.pdf`;
+    const filePath = path.join(PDF_DIR, fileName);
+
+    try {
+      fs.writeFileSync(filePath, buffer);
+      return { path: filePath };
+    } catch (err) {
+      throw new ValidationError("Failed to save uploaded PDF.");
     }
   },
 };

@@ -63,6 +63,26 @@ class DeliveryNoteDAO extends BaseDAO {
     }
   }
 
+  async getOnlyById(id) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [rows] = await connection.query(
+        `SELECT * FROM delivery_notes WHERE id = ?`,
+        [id]
+      );
+      if (rows.length === 0) {
+        throw new DNotesNotFoundError("Delivery note not found");
+      }
+      return rows[0];
+    } catch (error) {
+      this.handleError(error, connection, "Failed to get delivery note");
+      throw error;
+    } finally {
+      if (connection) connection.release();
+    }
+  }
+
   async checkIfProjectBelongsToClientBelongingToUser(
     userId,
     clientId,
@@ -142,7 +162,7 @@ class DeliveryNoteDAO extends BaseDAO {
           deliveryNote.date,
         ]
       );
-      return await this.getById(result.insertId);
+      return await this.getOnlyById(result.insertId);
     } catch (error) {
       this.handleError(error, connection, "Failed to create delivery note");
       throw error;

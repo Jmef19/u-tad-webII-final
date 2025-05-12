@@ -1,7 +1,8 @@
 const PDFDocument = require("pdfkit");
+const getStream = require("get-stream");
 
 const PDFKitService = {
-  generatePDF(logo, payload, res) {
+  async generatePDF(logo, payload, res) {
     const doc = new PDFDocument({ margin: 50 });
 
     res.setHeader(
@@ -59,6 +60,34 @@ const PDFKitService = {
     });
 
     doc.end();
+  },
+
+  async generatePDFBuffer(payload) {
+    const doc = new PDFDocument({ margin: 50 });
+    const stream = doc.pipe(require("stream").PassThrough());
+
+    doc.fontSize(20).text("Delivery Note", { align: "center" }).moveDown();
+
+    const content = [
+      { label: "Client ID", value: payload.client_id },
+      { label: "Project ID", value: payload.project_id },
+      { label: "Format", value: payload.format },
+      { label: "Material", value: payload.material },
+      { label: "Hours", value: payload.hours },
+      { label: "Description", value: payload.description },
+      { label: "Date", value: payload.date },
+      { label: "Signed", value: payload.signed },
+    ];
+
+    content.forEach(({ label, value }) => {
+      doc.font("Helvetica-Bold").text(`${label}:`);
+      doc.font("Helvetica").text(`${value}`);
+      doc.moveDown();
+    });
+
+    doc.end();
+
+    return await getStream.buffer(stream); // <— return buffer!
   },
 };
 

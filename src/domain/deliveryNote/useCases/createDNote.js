@@ -32,6 +32,7 @@ class CreateDeliveryNote {
       hours,
       description
     );
+    console.log("Delivery note created successfully");
     return await this.deliveryNoteDAO.create(deliveryNote);
   }
 }
