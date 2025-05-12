@@ -14,6 +14,7 @@ const {
   UserNotFoundError,
   ProjectNotFoundError,
   DNotesNotFoundError,
+  DNoteSignedError,
 } = require("../../../../../domain/errors");
 
 const {
@@ -22,6 +23,7 @@ const {
   GetDNoteById,
   PDFDNote,
   SignDNote,
+  DeleteDNote,
 } = require("../../../../../domain/deliveryNote/useCases");
 
 const router = Router();
@@ -43,7 +45,10 @@ function handleError(error, res) {
     error instanceof DeliveryNoteExistingError
   ) {
     res.status(403).json({ error: error.message });
-  } else if (error instanceof AlreadyExistsError) {
+  } else if (
+    error instanceof AlreadyExistsError ||
+    error instanceof DNoteSignedError
+  ) {
     res.status(409).json({ error: error.message });
   } else if (error instanceof DatabaseConnectionError) {
     res.status(500).json({ error: "Database connection error" });
@@ -195,6 +200,37 @@ router.patch("/sign/:id", async (req, res) => {
     }
     const signDNote = new SignDNote(DeliveryNoteDAO);
     const result = await signDNote.execute(token, clientId, projectId, dNoteId);
+    res.status(200).json(result);
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+// @route DELETE /delete/:id
+// @desc Delete a project by ID (soft/hard delete)
+router.delete("/delete/:cId/:pId/:id", async (req, res) => {
+  try {
+    const token = getTokenFromHeader(req);
+    const clientId = req.params.cId;
+    const projectId = req.params.pId;
+    const id = req.params.id;
+    const { soft } = req.query;
+    if (soft === undefined) {
+      throw new ValidationError("Query parameter 'soft' is required.");
+    }
+    if (soft !== "true" && soft !== "false") {
+      throw new ValidationError(
+        "Query parameter 'soft' must be 'true' or 'false'."
+      );
+    }
+    const deleteProject = new DeleteDNote(DeliveryNoteDAO);
+    const result = await deleteProject.execute(
+      id,
+      token,
+      clientId,
+      projectId,
+      soft === "true"
+    );
     res.status(200).json(result);
   } catch (error) {
     handleError(error, res);

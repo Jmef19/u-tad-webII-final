@@ -1429,6 +1429,60 @@ paths:
         "500":
           description: Something failed out from your control (Database connection error, database query error or internal server error)
 
+  /deliveryNote/delete/{cId}/{pId}/{id}:
+    delete:
+      tags:
+        - DeliveryNote
+      summary: Delete a delivery note (soft or hard)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: cId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the client that the delivery note belongs to
+        - name: pId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the project that the delivery note belongs to
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the delivery note to delete
+        - name: soft
+          in: query
+          required: true
+          schema:
+            type: boolean
+          description: Perform a soft delete if true; otherwise, perform a hard delete.
+      responses:
+        "200":
+          description: Delete a delivery note
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  acknowledge:
+                    type: boolean
+                    example: true
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "403":
+          description: Delivery note is already signed (DeliveryNoteAlreadySigned error)
+        "404":
+          description: Delivery note not found in database (DeliveryNoteNotFound error)
+        "422":
+          description: Something was wrong in the body or params provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+
   /user/emails:
     get:
       tags:

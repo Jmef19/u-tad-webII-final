@@ -3,6 +3,7 @@ const GetAll = require("./getDNotes");
 const GetDNoteById = require("./getDNoteById");
 const PDFDNote = require("./pdfDNote");
 const SignDNote = require("./signDNote");
+const DeleteDNote = require("./deleteDNote");
 
 module.exports = {
   CreateDeliveryNote,
@@ -10,4 +11,5 @@ module.exports = {
   GetDNoteById,
   PDFDNote,
   SignDNote,
+  DeleteDNote,
 };

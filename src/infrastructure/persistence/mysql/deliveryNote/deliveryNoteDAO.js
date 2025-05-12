@@ -6,6 +6,7 @@ const {
   ProjectNotFoundError,
   AlreadyExistsError,
   DNotesNotFoundError,
+  DNoteSignedError,
 } = require("../../../../domain/errors");
 
 class DeliveryNoteDAO extends BaseDAO {
@@ -23,7 +24,8 @@ class DeliveryNoteDAO extends BaseDAO {
     if (
       error instanceof ProjectNotFoundError ||
       error instanceof AlreadyExistsError ||
-      error instanceof DNotesNotFoundError
+      error instanceof DNotesNotFoundError ||
+      error instanceof DNoteSignedError
     ) {
       throw error;
     }
@@ -185,6 +187,80 @@ class DeliveryNoteDAO extends BaseDAO {
       return await this.getById(id, userId, clientId, projectId);
     } catch (error) {
       this.handleError(error, connection, "Failed to sign delivery note");
+      throw error;
+    } finally {
+      if (connection) connection.release();
+    }
+  }
+
+  async checkIfSigned(id, userId, clientId, projectId) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [rows] = await connection.query(
+        `SELECT signed FROM delivery_notes WHERE id = ? AND user_id = ? AND client_id = ? AND project_id = ? AND signed = 1`,
+        [id, userId, clientId, projectId]
+      );
+      if (rows.length === 0) {
+        throw new DNotesNotFoundError("Delivery note not found or not signed");
+      }
+      if (rows[0].signed === 1) {
+        throw new DNoteSignedError("Delivery note signed");
+      }
+    } catch (error) {
+      this.handleError(
+        error,
+        connection,
+        "Failed to check delivery note signed status"
+      );
+      throw error;
+    } finally {
+      if (connection) connection.release();
+    }
+  }
+
+  async softDelete(id, userId, clientId, projectId) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [result] = await connection.query(
+        `UPDATE delivery_notes SET deleted = 1 WHERE id = ? AND user_id = ? AND client_id = ? AND project_id = ?`,
+        [id, userId, clientId, projectId]
+      );
+      if (result.affectedRows === 0) {
+        throw new DNotesNotFoundError("Delivery note not found");
+      }
+      return result;
+    } catch (error) {
+      this.handleError(
+        error,
+        connection,
+        "Failed to soft delete delivery note"
+      );
+      throw error;
+    } finally {
+      if (connection) connection.release();
+    }
+  }
+
+  async hardDelete(id, userId, clientId, projectId) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [result] = await connection.query(
+        `UPDATE delivery_notes SET deleted = 2, format = NULL, material = NULL, hours = NULL, description = NULL, date = NULL, signed = NULL WHERE id = ? AND user_id = ? AND client_id = ? AND project_id = ?`,
+        [id, userId, clientId, projectId]
+      );
+      if (result.affectedRows === 0) {
+        throw new DNotesNotFoundError("Delivery note not found");
+      }
+      return result;
+    } catch (error) {
+      this.handleError(
+        error,
+        connection,
+        "Failed to hard delete delivery note"
+      );
       throw error;
     } finally {
       if (connection) connection.release();

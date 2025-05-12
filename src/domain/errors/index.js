@@ -11,6 +11,7 @@ const NotOwnedClientError = require("./NotOwnedClientError");
 const ProjectNotFoundError = require("./ProjectNotFoundError");
 const NotOwnedProjectError = require("./NotOwnedProjectError");
 const DNotesNotFoundError = require("./DNotesNotFoundError");
+const DNoteSignedError = require("./DNoteSignedError");
 
 module.exports = {
   AlreadyExistsError,
@@ -26,4 +27,5 @@ module.exports = {
   ProjectNotFoundError,
   NotOwnedProjectError,
   DNotesNotFoundError,
+  DNoteSignedError,
 };
