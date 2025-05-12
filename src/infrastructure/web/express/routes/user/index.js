@@ -25,6 +25,8 @@ const {
   UserNotValidatedError,
 } = require("../../../../../domain/errors");
 
+const { getEmails } = require("../../../../mock/smtpServer");
+
 const { CreateUserDeleteService } = require("../../../../services");
 const userDeleteService = CreateUserDeleteService({ UserDAO, CompanyDAO });
 
@@ -251,6 +253,12 @@ router.patch("/onboarding", async (req, res) => {
   } catch (error) {
     handleError(error, res);
   }
+});
+
+// @route GET /email
+// @desc emails from smtp
+router.get("/emails", (req, res) => {
+  res.send(getEmails());
 });
 
 module.exports = router;

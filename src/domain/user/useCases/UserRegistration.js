@@ -4,6 +4,7 @@ const {
   BcryptService,
   JWTService,
   GeneratorCodeService,
+  EmailService,
 } = require("../../../infrastructure/services");
 
 class UserRegistration {
@@ -20,6 +21,12 @@ class UserRegistration {
     newUser.password = password;
     newUser.password = await BcryptService.hash(password);
     newUser.validationCode = GeneratorCodeService.generate();
+
+    // Send validation email
+    await EmailService.sendValidationEmail(
+      newUser.email,
+      newUser.validationCode
+    );
 
     const result = await this.userDAO.userRegistration(newUser);
     const token = JWTService.generate(

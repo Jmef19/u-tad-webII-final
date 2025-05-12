@@ -30,7 +30,9 @@ You can preview the API documentation by pasting the contents of `docs/openapi.y
 - `express-fileupload`
 - `jsonwebtoken`
 - `mysql2`
+- `nodemailer`
 - `pdfkit`
+- `smtp-server`
 
 ## Challenges Faced
 

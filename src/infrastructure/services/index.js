@@ -5,6 +5,7 @@ const GeneratorCodeService = require("./generatorCodeService");
 const CreateUserDeleteService = require("./createUserDeleteService");
 const CreateOnboardingCompanyService = require("./createOnboardingCompanyService");
 const PDFKitService = require("./pdfkitService");
+const EmailService = require("./EmailService");
 
 module.exports = {
   BcryptService,
@@ -14,4 +15,5 @@ module.exports = {
   CreateUserDeleteService,
   CreateOnboardingCompanyService,
   PDFKitService,
+  EmailService,
 };
