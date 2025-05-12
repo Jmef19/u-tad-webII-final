@@ -837,3 +837,133 @@ paths:
           description: Something was wrong in the body provided (Validation error)
         "500":
           description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /project/getAll/{id}:
+    get:
+      tags:
+        - Project
+      summary: Get all projects from a client
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the client to retrieve projects from
+      responses:
+        "200":
+          description: Returns all projects from a client
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: "myProject"
+                    email:
+                      type: string
+                      example: "email@gmail.com"
+                    address:
+                      type: string
+                      example: "myAddress"
+                    deleted:
+                      type: integer
+                      example: 0
+                    user_id:
+                      type: integer
+                      example: 1
+                    client_id:
+                      type: integer
+                      example: 1
+                    project_code:
+                      type: string
+                      example: "123456"
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /project/update/{id}:
+    put:
+      tags:
+        - Project
+      summary: Update a project
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the project to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "myProject"
+                email:
+                  type: string
+                  example: "email@gmail.com"
+                address:
+                  type: string
+                  example: "myAddress"
+                client_id:
+                  type: integer
+                  example: 1
+                project_code:
+                  type: string
+                  example: "123456"
+      responses:
+        "200":
+          description: Returns the updated object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: "myProject"
+                  email:
+                    type: string
+                    example: "email@gmail.com"
+                  address:
+                    type: string
+                    example: "myAddress"
+                  deleted:
+                    type: integer
+                    example: 0
+                  user_id:
+                    type: integer
+                    example: 1
+                  client_id:
+                    type: integer
+                    example: 1
+                  project_code:
+                    type: string
+                    example: "123456"
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "404":
+          description: Project not found in database (ProjectNotFound error)
+        "422":
+          description: Something was wrong in the body provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)

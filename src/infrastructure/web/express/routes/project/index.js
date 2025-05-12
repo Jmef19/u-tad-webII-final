@@ -16,7 +16,11 @@ const {
   NotOwnedProjectError,
 } = require("../../../../../domain/errors");
 
-const { CreateProject } = require("../../../../../domain/project/useCases");
+const {
+  CreateProject,
+  UpdateProject,
+  GetProjects,
+} = require("../../../../../domain/project/useCases");
 
 const router = Router();
 
@@ -88,6 +92,48 @@ router.post("/create", async (req, res) => {
       },
       token
     );
+    res.status(200).json(result);
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+// @route put /update/:id
+// @desc Update a project
+router.put("/update/:id", async (req, res) => {
+  try {
+    const token = getTokenFromHeader(req);
+    const { name, email, address, clientId, projectCode, ...rest } = req.body;
+    if (Object.keys(rest).length > 0) {
+      throw new ValidationError("Request body contains unexpected fields.");
+    }
+    const id = req.params.id;
+    const updateProject = new UpdateProject(ProjectDAO);
+    const result = await updateProject.execute(
+      {
+        name,
+        email,
+        address,
+        clientId,
+        projectCode,
+      },
+      id,
+      token
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+// @route GET /getAll/:id
+// @desc Get all projects for a client
+router.get("/getAll/:id", async (req, res) => {
+  try {
+    const token = getTokenFromHeader(req);
+    const id = req.params.id;
+    const getProjects = new GetProjects(ProjectDAO);
+    const result = await getProjects.execute(id, token);
     res.status(200).json(result);
   } catch (error) {
     handleError(error, res);

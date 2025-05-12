@@ -166,18 +166,18 @@ class ProjectDAO extends BaseDAO {
     }
   }
 
-  async update(project) {
+  async update(project, id) {
     let connection;
     try {
       connection = await this.getConnectionWithSchema();
       const [result] = await connection.query(
         "UPDATE projects SET name = ?, email = ?, address = ? WHERE id = ?",
-        [project.projectName, project.email, project.address, project.id]
+        [project.name, project.email, project.address, id]
       );
       if (result.affectedRows === 0) {
         throw new ProjectNotFoundError("Project not found");
       }
-      return project;
+      return result;
     } catch (error) {
       this.handleError(error, connection);
     } finally {
