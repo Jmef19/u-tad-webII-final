@@ -41,16 +41,17 @@ class DeliveryNoteDAO extends BaseDAO {
     return this.pool.getConnection();
   }
 
-  async getById(id) {
+  async getById(id, userId, clientId, projectId) {
+    console.log("getById", id, userId, clientId, projectId);
     let connection;
     try {
       connection = await this.getConnectionWithSchema();
       const [rows] = await connection.query(
-        `SELECT * FROM delivery_notes WHERE id = ?`,
-        [id]
+        `SELECT * FROM delivery_notes WHERE id = ? AND user_id = ? AND client_id = ? AND project_id = ?`,
+        [id, userId, clientId, projectId]
       );
       if (rows.length === 0) {
-        throw new Error("Delivery note not found");
+        throw new DNotesNotFoundError("Delivery note not found");
       }
       return rows[0];
     } catch (error) {

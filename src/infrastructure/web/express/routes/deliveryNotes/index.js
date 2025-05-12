@@ -18,8 +18,9 @@ const {
 
 const {
   CreateDeliveryNote,
+  GetAll,
+  GetDNoteById,
 } = require("../../../../../domain/deliveryNote/useCases");
-const GetDNotes = require("../../../../../domain/deliveryNote/useCases/getDNotes");
 
 const router = Router();
 
@@ -117,8 +118,36 @@ router.get("/get", async (req, res) => {
         "ClientId and ProjectId are required in query params."
       );
     }
-    const getDeliveryNotes = new GetDNotes(DeliveryNoteDAO);
+    const getDeliveryNotes = new GetAll(DeliveryNoteDAO);
     const result = await getDeliveryNotes.execute(token, clientId, projectId);
+    res.status(200).json(result);
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+// @route GET /get/:id
+// @desc Get a specific delivery note by ID
+router.get("/get/:id", async (req, res) => {
+  try {
+    const token = getTokenFromHeader(req);
+    const { clientId, projectId } = req.query;
+    const dNoteId = req.params.id;
+    if (!clientId || !projectId) {
+      throw new ValidationError(
+        "ClientId and ProjectId are required in query params."
+      );
+    }
+    if (!dNoteId) {
+      throw new ValidationError("dNoteId is required in params.");
+    }
+    const getDeliveryNoteById = new GetDNoteById(DeliveryNoteDAO);
+    const result = await getDeliveryNoteById.execute(
+      token,
+      clientId,
+      projectId,
+      dNoteId
+    );
     res.status(200).json(result);
   } catch (error) {
     handleError(error, res);
