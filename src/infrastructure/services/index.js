@@ -4,6 +4,7 @@ const UploadService = require("./uploadService");
 const GeneratorCodeService = require("./generatorCodeService");
 const CreateUserDeleteService = require("./createUserDeleteService");
 const CreateOnboardingCompanyService = require("./createOnboardingCompanyService");
+const PDFKitService = require("./pdfkitService");
 
 module.exports = {
   BcryptService,
@@ -12,4 +13,5 @@ module.exports = {
   GeneratorCodeService,
   CreateUserDeleteService,
   CreateOnboardingCompanyService,
+  PDFKitService,
 };

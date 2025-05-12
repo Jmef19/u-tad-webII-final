@@ -42,7 +42,6 @@ class DeliveryNoteDAO extends BaseDAO {
   }
 
   async getById(id, userId, clientId, projectId) {
-    console.log("getById", id, userId, clientId, projectId);
     let connection;
     try {
       connection = await this.getConnectionWithSchema();
@@ -164,6 +163,28 @@ class DeliveryNoteDAO extends BaseDAO {
       return rows;
     } catch (error) {
       this.handleError(error, connection, "Failed to get delivery notes");
+      throw error;
+    } finally {
+      if (connection) connection.release();
+    }
+  }
+
+  async sign(id, userId, clientId, projectId) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [result] = await connection.query(
+        `UPDATE delivery_notes SET signed = 1 WHERE id = ? AND user_id = ? AND client_id = ? AND project_id = ? AND signed = 0`,
+        [id, userId, clientId, projectId]
+      );
+      if (result.affectedRows === 0) {
+        throw new DNotesNotFoundError(
+          "Delivery note not found or already signed"
+        );
+      }
+      return await this.getById(id, userId, clientId, projectId);
+    } catch (error) {
+      this.handleError(error, connection, "Failed to sign delivery note");
       throw error;
     } finally {
       if (connection) connection.release();

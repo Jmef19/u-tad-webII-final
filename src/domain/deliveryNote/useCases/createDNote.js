@@ -23,11 +23,6 @@ class CreateDeliveryNote {
     deliveryNote.hours = hours;
     deliveryNote.description = description;
     deliveryNote.date = new Date();
-    await this.deliveryNoteDAO.checkIfProjectBelongsToClientBelongingToUser(
-      userId,
-      clientId,
-      projectId
-    );
     await this.deliveryNoteDAO.checkIfExists(
       userId,
       clientId,

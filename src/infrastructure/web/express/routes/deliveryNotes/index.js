@@ -20,6 +20,8 @@ const {
   CreateDeliveryNote,
   GetAll,
   GetDNoteById,
+  PDFDNote,
+  SignDNote,
 } = require("../../../../../domain/deliveryNote/useCases");
 
 const router = Router();
@@ -148,6 +150,51 @@ router.get("/get/:id", async (req, res) => {
       projectId,
       dNoteId
     );
+    res.status(200).json(result);
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+// @route GET /pdf/:id
+// @desc Generate a PDF for a specific delivery note by ID
+router.get("/pdf/:id", async (req, res) => {
+  try {
+    const token = getTokenFromHeader(req);
+    const { clientId, projectId } = req.query;
+    const dNoteId = req.params.id;
+    if (!clientId || !projectId) {
+      throw new ValidationError(
+        "ClientId and ProjectId are required in query params."
+      );
+    }
+    if (!dNoteId) {
+      throw new ValidationError("dNoteId is required in params.");
+    }
+    const pdfDNote = new PDFDNote(DeliveryNoteDAO);
+    await pdfDNote.execute(token, clientId, projectId, dNoteId, res);
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+// @route PATCH /sign/:id
+// @desc Sign a specific delivery note by ID
+router.patch("/sign/:id", async (req, res) => {
+  try {
+    const token = getTokenFromHeader(req);
+    const { clientId, projectId } = req.query;
+    const dNoteId = req.params.id;
+    if (!clientId || !projectId) {
+      throw new ValidationError(
+        "ClientId and ProjectId are required in query params."
+      );
+    }
+    if (!dNoteId) {
+      throw new ValidationError("dNoteId is required in params.");
+    }
+    const signDNote = new SignDNote(DeliveryNoteDAO);
+    const result = await signDNote.execute(token, clientId, projectId, dNoteId);
     res.status(200).json(result);
   } catch (error) {
     handleError(error, res);

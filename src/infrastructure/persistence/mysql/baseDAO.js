@@ -84,6 +84,7 @@ class BaseDAO {
           description VARCHAR(255),
           deleted INT DEFAULT 0,
           date DATETIME DEFAULT CURRENT_TIMESTAMP,
+          signed bool DEFAULT false,
           FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL,
           FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL
         )

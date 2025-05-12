@@ -1184,6 +1184,9 @@ paths:
                   date:
                     type: string
                     example: "2023-10-01"
+                  signed:
+                    type: boolean
+                    example: false
         "401":
           description: Token was not found or invalid (JWT error)
         "409":
@@ -1250,6 +1253,9 @@ paths:
                     date:
                       type: string
                       example: "2023-10-01"
+                    signed:
+                      type: boolean
+                      example: false
         "401":
           description: Token was not found or invalid (JWT error)
         "404":
@@ -1320,6 +1326,98 @@ paths:
                   date:
                     type: string
                     example: "2023-10-01"
+                  signed:
+                    type: boolean
+                    example: false
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "404":
+          description: Delivery note not found in database (DeliveryNoteNotFound error)
+        "422":
+          description: Something was wrong in the body provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /deliveryNote/pdf/{id}:
+    get:
+      tags:
+        - DeliveryNote
+      summary: Generate a PDF for a delivery note
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the delivery note to generate PDF for
+        - name: clientId
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: ID of the client to retrieve delivery note from
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: ID of the project to retrieve delivery note from
+      responses:
+        "200":
+          description: Returns the PDF file
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "404":
+          description: Delivery note not found in database (DeliveryNoteNotFound error)
+        "422":
+          description: Something was wrong in the body provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /deliveryNote/sign/{id}:
+    patch:
+      tags:
+        - DeliveryNote
+      summary: Sign a delivery note
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the delivery note to sign
+        - name: clientId
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: ID of the client to retrieve delivery note from
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: ID of the project to retrieve delivery note from
+      responses:
+        "200":
+          description: Signs the delivery note
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  acknowledge:
+                    type: boolean
+                    example: true
         "401":
           description: Token was not found or invalid (JWT error)
         "404":
