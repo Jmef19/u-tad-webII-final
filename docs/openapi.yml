@@ -1028,7 +1028,7 @@ paths:
         "500":
           description: Something failed out from your control (Database connection error, database query error or internal server error)
 
-  /project/delete/{id}:
+  /project/delete/{cId}/{id}:
     delete:
       tags:
         - Project
@@ -1042,22 +1042,18 @@ paths:
           schema:
             type: integer
           description: ID of the project to delete
+        - name: cId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the client that the project belongs to
         - name: soft
           in: query
           required: true
           schema:
             type: boolean
           description: Perform a soft delete if true; otherwise, perform a hard delete.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                clientId:
-                  type: string
-                  example: "23"
       responses:
         "200":
           description: Delete a project
@@ -1075,5 +1071,48 @@ paths:
           description: Project not found in database (ProjectNotFound error)
         "422":
           description: Something was wrong in the body or params provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+  /project/restore/{id}:
+    patch:
+      tags:
+        - Project
+      summary: Restore a soft-deleted project
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the project to restore
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  example: "23"
+      responses:
+        "200":
+          description: Restores a soft-deleted project
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  acknowledge:
+                    type: boolean
+                    example: true
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "404":
+          description: Project not found in database (ProjectNotFound error)
+        "422":
+          description: Something was wrong in the body provided (Validation error)
         "500":
           description: Something failed out from your control (Database connection error, database query error or internal server error)

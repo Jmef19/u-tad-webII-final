@@ -231,7 +231,7 @@ class ProjectDAO extends BaseDAO {
     try {
       connection = await this.getConnectionWithSchema();
       const [result] = await connection.query(
-        "UPDATE projects SET deleted = 2, name = NULL, email = NULL, address = NULL, WHERE id = ?",
+        "UPDATE projects SET deleted = 2, name = NULL, email = NULL, address = NULL, user_id = NULL, client_id = NULL, project_code = NULL WHERE id = ?",
         [id]
       );
       if (result.affectedRows === 0) {

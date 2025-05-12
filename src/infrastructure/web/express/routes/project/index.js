@@ -22,6 +22,7 @@ const {
   GetProjects,
   GetProjectById,
   DeleteProject,
+  RestoreProject,
 } = require("../../../../../domain/project/useCases");
 
 const router = Router();
@@ -159,17 +160,11 @@ router.get("/getById/:id", async (req, res) => {
 
 // @route DELETE /delete/:id
 // @desc Delete a project by ID (soft/hard delete)
-router.delete("/delete/:id", async (req, res) => {
+router.delete("/delete/:cId/:id", async (req, res) => {
   try {
     const token = getTokenFromHeader(req);
+    const clientId = req.params.cId;
     const id = req.params.id;
-    const { clientId, ...rest } = req.body;
-    if (!clientId || typeof clientId !== "string") {
-      throw new ValidationError("Request body must contain a string called 'clientId'.");
-    }
-    if (Object.keys(rest).length > 0) {
-      throw new ValidationError("Request body contains unexpected fields.");
-    }
     const { soft } = req.query;
     if (soft === undefined) {
       throw new ValidationError("Query parameter 'soft' is required.");
@@ -186,6 +181,29 @@ router.delete("/delete/:id", async (req, res) => {
       clientId,
       soft === "true"
     );
+    res.status(200).json(result);
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+// @route PATCH /restore/:id
+// @desc Restore a soft-deleted project by ID
+router.patch("/restore/:id", async (req, res) => {
+  try {
+    const token = getTokenFromHeader(req);
+    const id = req.params.id;
+    const { clientId, ...rest } = req.body;
+    if (!clientId || typeof clientId !== "string") {
+      throw new ValidationError(
+        "Request body must contain a string called 'clientId'."
+      );
+    }
+    if (Object.keys(rest).length > 0) {
+      throw new ValidationError("Request body contains unexpected fields.");
+    }
+    const restoreProject = new RestoreProject(ProjectDAO);
+    const result = await restoreProject.execute(id, token, clientId);
     res.status(200).json(result);
   } catch (error) {
     handleError(error, res);
