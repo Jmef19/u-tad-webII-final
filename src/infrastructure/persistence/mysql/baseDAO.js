@@ -71,6 +71,23 @@ class BaseDAO {
           FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL
         )
       `);
+
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS delivery_notes (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          user_id INT,
+          client_id INT,
+          project_id INT,
+          format ENUM('material', 'hours'),
+          material VARCHAR(255),
+          hours INT,
+          description VARCHAR(255),
+          deleted INT DEFAULT 0,
+          date DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL,
+          FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL
+        )
+      `);
     } catch (error) {
       if (!connection || error?.code === "ECONNREFUSED") {
         throw new DatabaseConnectionError("Error connecting to database");

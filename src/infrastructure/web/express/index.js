@@ -5,6 +5,7 @@ const {
   userRouter,
   clientRouter,
   projectRouter,
+  deliveryNoteRouter,
 } = require("./routes");
 
 function startWeb() {
@@ -18,6 +19,7 @@ function startWeb() {
   app.use("/user", userRouter);
   app.use("/client", clientRouter);
   app.use("/project", projectRouter);
+  app.use("/deliveryNote", deliveryNoteRouter);
 
   // Start the server
   const server = startServer(app, process.env.PORT || 3000);

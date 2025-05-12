@@ -16,7 +16,7 @@ tags:
     description: All endpoints related to client
   - name: Project
     description: All endpoints related to project
-  - name: DeliveryNotes
+  - name: DeliveryNote
     description: All endpoints related to delivery notes
 
 components:
@@ -1116,3 +1116,79 @@ paths:
           description: Something was wrong in the body provided (Validation error)
         "500":
           description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /deliveryNote/create:
+    post:
+      tags:
+        - DeliveryNote
+      summary: Create a new delivery note
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  example: "23"
+                projectId:
+                  type: string
+                  example: "3"
+                format:
+                  type: string
+                  example: "material/hours"
+                material:
+                  type: string
+                  example: "material"
+                hours:
+                  type: integer
+                  example: 10
+                description:
+                  type: string
+                  example: "description"
+    responses:
+      "200":
+        description: Returns the created object
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                userId:
+                  type: integer
+                  example: 1
+                clientId:
+                  type: string
+                  example: "23"
+                projectId:
+                  type: string
+                  example: "3"
+                format:
+                  type: string
+                  example: "material/hours"
+                material:
+                  type: string
+                  example: "material"
+                hours:
+                  type: integer
+                  example: 10
+                description:
+                  type: string
+                  example: "description"
+                date:
+                  type: string
+                  example: "2023-10-01"
+      "401":
+        description: Token was not found or invalid (JWT error)
+      "409":
+        description: Delivery note already exists in database (AlreadyExists error)
+      "422":
+        description: Something was wrong in the body provided (Validation error)
+      "500":
+        description: Something failed out from your control (Database connection error, database query error or internal server error)
