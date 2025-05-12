@@ -190,6 +190,26 @@ class DeliveryNoteDAO extends BaseDAO {
       if (connection) connection.release();
     }
   }
+
+  async getLogoFromUserId(userId) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [rows] = await connection.query(
+        `SELECT profile_url FROM users WHERE id = ?`,
+        [userId]
+      );
+      if (rows.length === 0) {
+        throw new DNotesNotFoundError("User not found");
+      }
+      return rows[0];
+    } catch (error) {
+      this.handleError(error, connection, "Failed to get user logo");
+      throw error;
+    } finally {
+      if (connection) connection.release();
+    }
+  }
 }
 
 module.exports = new DeliveryNoteDAO();

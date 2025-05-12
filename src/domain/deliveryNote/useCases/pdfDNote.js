@@ -17,7 +17,8 @@ class PDFDNote {
       clientId,
       projectId
     );
-    PDFKitService.generatePDF(deliveryNote, res);
+    const logo = await this.deliveryNoteDAO.getLogoFromUserId(userId);
+    PDFKitService.generatePDF(logo, deliveryNote, res);
   }
 }
 
