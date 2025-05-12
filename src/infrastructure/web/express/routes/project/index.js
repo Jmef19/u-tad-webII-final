@@ -21,6 +21,7 @@ const {
   UpdateProject,
   GetProjects,
   GetProjectById,
+  DeleteProject,
 } = require("../../../../../domain/project/useCases");
 
 const router = Router();
@@ -150,6 +151,41 @@ router.get("/getById/:id", async (req, res) => {
     const projectId = req.query.pId;
     const getProjects = new GetProjectById(ProjectDAO);
     const result = await getProjects.execute(projectId, token, clientId);
+    res.status(200).json(result);
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+// @route DELETE /delete/:id
+// @desc Delete a project by ID (soft/hard delete)
+router.delete("/delete/:id", async (req, res) => {
+  try {
+    const token = getTokenFromHeader(req);
+    const id = req.params.id;
+    const { clientId, ...rest } = req.body;
+    if (!clientId || typeof clientId !== "string") {
+      throw new ValidationError("Request body must contain a string called 'clientId'.");
+    }
+    if (Object.keys(rest).length > 0) {
+      throw new ValidationError("Request body contains unexpected fields.");
+    }
+    const { soft } = req.query;
+    if (soft === undefined) {
+      throw new ValidationError("Query parameter 'soft' is required.");
+    }
+    if (soft !== "true" && soft !== "false") {
+      throw new ValidationError(
+        "Query parameter 'soft' must be 'true' or 'false'."
+      );
+    }
+    const deleteProject = new DeleteProject(ProjectDAO);
+    const result = await deleteProject.execute(
+      id,
+      token,
+      clientId,
+      soft === "true"
+    );
     res.status(200).json(result);
   } catch (error) {
     handleError(error, res);
