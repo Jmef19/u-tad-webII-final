@@ -20,6 +20,7 @@ const {
   CreateProject,
   UpdateProject,
   GetProjects,
+  GetProjectById,
 } = require("../../../../../domain/project/useCases");
 
 const router = Router();
@@ -134,6 +135,21 @@ router.get("/getAll/:id", async (req, res) => {
     const id = req.params.id;
     const getProjects = new GetProjects(ProjectDAO);
     const result = await getProjects.execute(id, token);
+    res.status(200).json(result);
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+// @route GET /get/:id
+// @desc Get a project by ID
+router.get("/getById/:id", async (req, res) => {
+  try {
+    const token = getTokenFromHeader(req);
+    const clientId = req.params.id;
+    const projectId = req.query.pId;
+    const getProjects = new GetProjectById(ProjectDAO);
+    const result = await getProjects.execute(projectId, token, clientId);
     res.status(200).json(result);
   } catch (error) {
     handleError(error, res);

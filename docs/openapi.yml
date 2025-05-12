@@ -967,3 +967,63 @@ paths:
           description: Something was wrong in the body provided (Validation error)
         "500":
           description: Something failed out from your control (Database connection error, database query error or internal server error)
+  /project/get/{id}:
+    get:
+      tags:
+        - Project
+      summary: Get a project by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the client to retrieve
+        - name: pId
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: ID of the project to retrieve
+      responses:
+        "200":
+          description: Returns the project object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: "myProject"
+                  email:
+                    type: string
+                    example: "email@gmail.com"
+                  address:
+                    type: string
+                    example: "myAddress"
+                  deleted:
+                    type: integer
+                    example: 0
+                  user_id:
+                    type: integer
+                    example: 1
+                  client_id:
+                    type: integer
+                    example: 1
+                  project_code:
+                    type: string
+                    example: "123456"
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "404":
+          description: Project not found in database (ProjectNotFound error)
+        "422":
+          description: Something was wrong in the body provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
