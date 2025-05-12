@@ -1192,3 +1192,69 @@ paths:
         description: Something was wrong in the body provided (Validation error)
       "500":
         description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /deliveryNote/getAll:
+    get:
+      tags:
+        - DeliveryNote
+      summary: Get all delivery notes from a user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: clientId
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: ID of the client to retrieve delivery notes from
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: ID of the project to retrieve delivery notes from
+      responses:
+        "200":
+          description: Returns all delivery notes from a user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    userId:
+                      type: integer
+                      example: 1
+                    clientId:
+                      type: string
+                      example: "23"
+                    projectId:
+                      type: string
+                      example: "3"
+                    format:
+                      type: string
+                      example: "material/hours"
+                    material:
+                      type: string
+                      example: "material"
+                    hours:
+                      type: integer
+                      example: 10
+                    description:
+                      type: string
+                      example: "description"
+                    date:
+                      type: string
+                      example: "2023-10-01"
+        "401":
+          description: Token was not found or invalid (JWT error)
+          "404":
+            description: Delivery note not found in database (DeliveryNoteNotFound error)
+        "422":
+          description: Something was wrong in the body provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)

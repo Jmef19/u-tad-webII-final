@@ -5,6 +5,7 @@ const {
   DatabaseQueryError,
   ProjectNotFoundError,
   AlreadyExistsError,
+  DNotesNotFoundError,
 } = require("../../../../domain/errors");
 
 class DeliveryNoteDAO extends BaseDAO {
@@ -21,7 +22,8 @@ class DeliveryNoteDAO extends BaseDAO {
   handleError(error, connection, customMessage = "Database operation failed") {
     if (
       error instanceof ProjectNotFoundError ||
-      error instanceof AlreadyExistsError
+      error instanceof AlreadyExistsError ||
+      error instanceof DNotesNotFoundError
     ) {
       throw error;
     }
@@ -141,6 +143,26 @@ class DeliveryNoteDAO extends BaseDAO {
       return await this.getById(result.insertId);
     } catch (error) {
       this.handleError(error, connection, "Failed to create delivery note");
+      throw error;
+    } finally {
+      if (connection) connection.release();
+    }
+  }
+
+  async getAll(userId, clientId, projectId) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [rows] = await connection.query(
+        `SELECT * FROM delivery_notes WHERE user_id = ? AND client_id = ? AND project_id = ?`,
+        [userId, clientId, projectId]
+      );
+      if (rows.length === 0) {
+        throw new DNotesNotFoundError("No delivery notes found");
+      }
+      return rows;
+    } catch (error) {
+      this.handleError(error, connection, "Failed to get delivery notes");
       throw error;
     } finally {
       if (connection) connection.release();

@@ -13,11 +13,13 @@ const {
   AlreadyExistsError,
   UserNotFoundError,
   ProjectNotFoundError,
+  DNotesNotFoundError,
 } = require("../../../../../domain/errors");
 
 const {
   CreateDeliveryNote,
 } = require("../../../../../domain/deliveryNote/useCases");
+const GetDNotes = require("../../../../../domain/deliveryNote/useCases/getDNotes");
 
 const router = Router();
 
@@ -29,7 +31,8 @@ function handleError(error, res) {
   } else if (
     error instanceof ClientNotFoundError ||
     error instanceof UserNotFoundError ||
-    error instanceof ProjectNotFoundError
+    error instanceof ProjectNotFoundError ||
+    error instanceof DNotesNotFoundError
   ) {
     res.status(404).json({ error: error.message });
   } else if (
@@ -97,6 +100,25 @@ router.post("/create", async (req, res) => {
       },
       token
     );
+    res.status(200).json(result);
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+// @route GET /get
+// @desc Get all delivery notes for a specific client and project
+router.get("/get", async (req, res) => {
+  try {
+    const token = getTokenFromHeader(req);
+    const { clientId, projectId } = req.query;
+    if (!clientId || !projectId) {
+      throw new ValidationError(
+        "ClientId and ProjectId are required in query params."
+      );
+    }
+    const getDeliveryNotes = new GetDNotes(DeliveryNoteDAO);
+    const result = await getDeliveryNotes.execute(token, clientId, projectId);
     res.status(200).json(result);
   } catch (error) {
     handleError(error, res);

@@ -1,6 +1,7 @@
 const CreateDeliveryNote = require("./createDNote");
+const GetAll = require("./getDNotes");
 
 module.exports = {
   CreateDeliveryNote,
-  // Add other use cases here as needed
+  GetAll,
 };
