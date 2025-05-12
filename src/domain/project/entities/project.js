@@ -2,17 +2,19 @@ const { ValidationError } = require("../../errors");
 
 class Project {
   #id;
+  #projectCode;
   #name;
   #email;
   #address;
   #userId;
   #clientId;
 
-  constructor({ name, email, address, clientId }) {
-    this.#name = name;
-    this.#email = email;
-    this.#address = address;
-    this.#clientId = clientId;
+  constructor({ name, email, address, clientId, projectCode }) {
+    this.projectCode = projectCode;
+    this.name = name;
+    this.email = email;
+    this.address = address;
+    this.clientId = clientId;
   }
 
   get id() {
@@ -24,12 +26,8 @@ class Project {
   }
 
   set name(name) {
-    if (
-      !name ||
-      typeof name !== "string" ||
-      name.trim() === ""
-    ) {
-      throw new ValidationError("Company name must be a non-empty string");
+    if (!name || typeof name !== "string" || name.trim() === "") {
+      throw new ValidationError("Project name must be a non-empty string");
     }
     this.#name = name;
   }
@@ -56,7 +54,7 @@ class Project {
 
   set address(address) {
     if (!address || typeof address !== "string" || address.trim() === "") {
-      throw new ValidationError("Company address must be a non-empty string");
+      throw new ValidationError("Project address must be a non-empty string");
     }
     this.#address = address;
   }
@@ -66,14 +64,35 @@ class Project {
   }
 
   set userId(userId) {
-    if (!userId || typeof userId !== "number") {
-      throw new ValidationError("User ID must be a number");
+    if (!userId || typeof userId !== "number" || userId <= 0) {
+      throw new ValidationError("User ID must be a positive integer");
     }
     this.#userId = userId;
   }
 
   get clientId() {
     return this.#clientId;
+  }
+  set clientId(clientId) {
+    if (!clientId || typeof clientId !== "number" || clientId <= 0) {
+      throw new ValidationError("Client ID must be a positive integer");
+    }
+    this.#clientId = clientId;
+  }
+
+  get projectCode() {
+    return this.#projectCode;
+  }
+
+  set projectCode(projectCode) {
+    if (
+      !projectCode ||
+      typeof projectCode !== "string" ||
+      projectCode.trim() === ""
+    ) {
+      throw new ValidationError("Project code must be a non-empty string");
+    }
+    this.#projectCode = projectCode;
   }
 }
 

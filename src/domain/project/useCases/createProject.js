@@ -7,15 +7,21 @@ class CreateProject {
     this.projectDAO = projectDAO;
   }
 
-  async execute({ name, email, address, clientId }, token) {
+  async execute({ name, email, address, clientId, projectCode }, token) {
     const decoded = JWTService.verify(token);
     const project = new Project({
-      projectName: name,
+      name,
       email,
       address,
       clientId,
+      projectCode,
     });
     project.userId = decoded.id;
+    await this.projectDAO.checkIfUserOwnsClient(
+      project.clientId,
+      project.userId
+    );
+    await this.projectDAO.checkIfProjectExists(project.projectCode);
     const createdProject = await this.projectDAO.create(project);
     return createdProject;
   }

@@ -736,7 +736,7 @@ paths:
           description: Something was wrong in the body or params provided (Validation error)
         "500":
           description: Something failed out from your control (Database connection error, database query error or internal server error)
-  
+
   /client/restore/{id}:
     patch:
       tags:
@@ -766,6 +766,73 @@ paths:
           description: Token was not found or invalid (JWT error)
         "404":
           description: Client not found in database (ClientNotFound error)
+        "422":
+          description: Something was wrong in the body provided (Validation error)
+        "500":
+          description: Something failed out from your control (Database connection error, database query error or internal server error)
+
+  /project/create:
+    post:
+      tags:
+        - Project
+      summary: Create a new project
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "myProject"
+                email:
+                  type: string
+                  example: "email@gmail.com"
+                address:
+                  type: string
+                  example: "myAddress"
+                client_id:
+                  type: integer
+                  example: 1
+      responses:
+        "200":
+          description: Returns the created object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: "myProject"
+                  email:
+                    type: string
+                    example: "email@gmail.com"
+                  address:
+                    type: string
+                    example: "myAddress"
+                  deleted:
+                    type: integer
+                    example: 0
+                  user_id:
+                    type: integer
+                    example: 1
+                  client_id:
+                    type: integer
+                    example: 1
+                  project_code:
+                    type: string
+                    example: "123456"
+        "401":
+          description: Token was not found or invalid (JWT error)
+        "409":
+          description: Project already exists in database (AlreadyExists error)
         "422":
           description: Something was wrong in the body provided (Validation error)
         "500":

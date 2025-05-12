@@ -71,7 +71,7 @@ function assertEmptyBody(req) {
   }
 }
 
-// @route POST /
+// @route POST /create
 // @desc Create a new client
 router.post("/create", async (req, res) => {
   try {

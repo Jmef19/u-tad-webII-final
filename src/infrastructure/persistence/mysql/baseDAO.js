@@ -66,6 +66,7 @@ class BaseDAO {
           deleted INT DEFAULT 0,
           user_id INT,
           client_id INT,
+          project_code VARCHAR(255) UNIQUE,
           FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
           FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL
         )

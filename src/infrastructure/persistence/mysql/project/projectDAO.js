@@ -5,6 +5,8 @@ const {
   DatabaseQueryError,
   ProjectNotFoundError,
   NotOwnedProjectError,
+  AlreadyExistsError,
+  NotOwnedClientError,
 } = require("../../../../domain/errors");
 
 class ProjectDAO extends BaseDAO {
@@ -15,7 +17,9 @@ class ProjectDAO extends BaseDAO {
   handleError(error, connection, customMessage = "Database operation failed") {
     if (
       error instanceof ProjectNotFoundError ||
-      error instanceof NotOwnedProjectError
+      error instanceof NotOwnedProjectError ||
+      error instanceof NotOwnedClientError ||
+      error instanceof AlreadyExistsError
     ) {
       throw error;
     }
@@ -53,21 +57,85 @@ class ProjectDAO extends BaseDAO {
     }
   }
 
+  async findByProjectCode(projectCode) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [rows] = await connection.query(
+        "SELECT * FROM projects WHERE project_code = ?",
+        [projectCode]
+      );
+      if (rows.length === 0) {
+        throw new ProjectNotFoundError("Project not found");
+      }
+      return rows[0];
+    } catch (error) {
+      this.handleError(error, connection);
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
+  async checkIfProjectExists(projectCode) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [rows] = await connection.query(
+        "SELECT * FROM projects WHERE project_code = ?",
+        [projectCode]
+      );
+      if (rows.length > 0) {
+        throw new AlreadyExistsError("Project already exists");
+      }
+      return rows[0];
+    } catch (error) {
+      this.handleError(error, connection);
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
+  async checkIfUserOwnsClient(clientId, userId) {
+    let connection;
+    try {
+      connection = await this.getConnectionWithSchema();
+      const [rows] = await connection.query(
+        "SELECT * FROM clients WHERE id = ? AND user_id = ?",
+        [clientId, userId]
+      );
+      if (rows.length === 0) {
+        throw new NotOwnedClientError("User does not own this client");
+      }
+      return rows[0];
+    } catch (error) {
+      this.handleError(error, connection);
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
   async create(project) {
     let connection;
     try {
       connection = await this.getConnectionWithSchema();
       const [result] = await connection.query(
-        "INSERT INTO projects (name, email, address, client_id, user_id) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO projects (name, email, address, client_id, user_id, project_code) VALUES (?, ?, ?, ?, ?, ?)",
         [
-          project.projectName,
+          project.name,
           project.email,
           project.address,
           project.clientId,
           project.userId,
+          project.projectCode,
         ]
       );
-      return { ...project, id: result.insertId };
+      return await this.getById(result.insertId);
     } catch (error) {
       this.handleError(error, connection);
     } finally {
