@@ -29,11 +29,13 @@ You can preview the API documentation by pasting the contents of `docs/openapi.y
 - `dotenv`
 - `express`
 - `express-fileupload`
+- `jest`
 - `jsonwebtoken`
 - `mysql2`
 - `nodemailer`
 - `pdfkit`
 - `smtp-server`
+- `supertest`
 
 ## Challenges Faced
 
