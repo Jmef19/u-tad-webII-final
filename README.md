@@ -1,6 +1,6 @@
 # Web II Final Assignment
 
-**Work in Progress**: Due to time constraints, some implementations are not as refined as intended.
+**Work in Progress**: Due to time constraints, some implementations are not as refined as intended. Additionally, unit and HTTP endpoint testing (using Jest and Supertest, respectively) were planned but not completed.
 
 ### By Juan Manuel Escudero
 [GitHub](https://github.com/Jmef19/u-tad-webII-final)
